@@ -7,7 +7,8 @@ use crate::{chat::Chat, message::Message, user::{User, UserCreationInfo}};
 #[allow(non_camel_case_types)]
 #[derive(Serialize, Deserialize)]
 pub enum ClientMessage {
-    NEW_USER(UserCreationInfo),
+    LOGIN(UserCreationInfo),
+    SIGN_UP(UserCreationInfo),
     NEW_CHAT(Chat),
     // Chat uuid, Message
     MESSAGE_SEND(UUID, Message),
@@ -26,7 +27,8 @@ pub enum ClientMessage {
 impl Debug for ClientMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::NEW_USER(arg0) => f.debug_tuple("NEW_USER").field(arg0).finish(),
+            Self::LOGIN(arg0) => f.debug_tuple("LOGIN").field(arg0).finish(),
+            Self::SIGN_UP(arg0) => f.debug_tuple("SIGN_UP").field(arg0).finish(),
             Self::NEW_CHAT(arg0) => f.debug_tuple("NEW_CHAT").field(arg0).finish(),
             Self::MESSAGE_SEND(arg0, arg1) => f.debug_tuple("MESSAGE_SEND").field(arg0).field(arg1).finish(),
             Self::UPDATE_USER_TAG(arg0, arg1) => f.debug_tuple("UPDATE_USER_TAG").field(arg0).field(arg1).finish(),
@@ -42,10 +44,18 @@ impl Debug for ClientMessage {
 #[allow(non_camel_case_types)]
 #[derive(Serialize, Deserialize, Debug)]
 pub enum ServerMessage {
-    SUCCESS,
+    SUCCESS(SuccessType),
     FAIL(String),
     // Chat uuid, Message
     MESSAGE_RECEIVED(UUID, Message),
     // Sender
     FRIEND_REQUEST(UUID),
+}
+
+#[allow(non_camel_case_types)]
+#[derive(Serialize, Deserialize, Debug)]
+pub enum SuccessType {
+    LOGIN(User),
+    SIGN_UP(User),
+    GENERAL,
 }

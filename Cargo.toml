@@ -6,4 +6,5 @@ edition = "2021"
 [dependencies]
 chrono = "=0.4.38"
 serde = { version = "1.0.210", features = ["derive"] }
+bincode = "=1.3.3"
 l3gion_rust = { path = "../../l3gion_rust/l3gion_rust" }
