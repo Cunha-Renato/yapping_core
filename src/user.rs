@@ -2,7 +2,7 @@ use std::fmt::Debug;
 use l3gion_rust::{StdError, UUID};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Default, Clone, Serialize, Deserialize)]
 pub struct UserCreationInfo {
     pub tag: String,
     pub email: String,
