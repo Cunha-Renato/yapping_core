@@ -1,6 +1,8 @@
 use l3gion_rust::UUID;
 use serde::{Deserialize, Serialize};
 
+use crate::date_time::DateTime;
+
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum MessageType {
     TEXT(String),
@@ -9,6 +11,14 @@ pub enum MessageType {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Message {
-    content: MessageType,
     sender: UUID,
+    content: MessageType,
+    date_time: DateTime,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct DbMessage {
+    sender: UUID,
+    content: MessageType,
+    date_time: DateTime,
 }

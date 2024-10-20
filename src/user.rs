@@ -2,6 +2,7 @@ use std::fmt::Debug;
 use l3gion_rust::{StdError, UUID};
 use serde::{Deserialize, Serialize};
 
+/// When printing the password shows, it's not a problem because this is a prototype.
 #[derive(Default, Clone, Serialize, Deserialize)]
 pub struct UserCreationInfo {
     pub tag: String,
@@ -10,7 +11,7 @@ pub struct UserCreationInfo {
 }
 impl Debug for UserCreationInfo {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("UserCreationInfo").field("tag", &self.tag).field("email", &self.email).field("password", &"Hidden").finish()
+        f.debug_struct("UserCreationInfo").field("tag", &self.tag).field("email", &self.email).field("password", &self.password).finish()
     }
 }
 
@@ -25,19 +26,10 @@ pub struct User {
     uuid: UUID,
     tag: String,
     profile_pic: Option<UUID>,
-    friends: Vec<Friend>,
+    friends: Vec<User>,
     state: UserState,
 }
 impl User {
-    pub fn as_friend(self) -> Friend {
-        Friend {
-            uuid: self.uuid,
-            tag: self.tag,
-            profile_pic: self.profile_pic,
-            state: self.state,
-        }
-    }
-
     pub fn from(value: DbUser) -> Result<Self, StdError> {
         Ok(Self {
             uuid: UUID::from_u128(value._id.parse::<u128>()?),
@@ -50,12 +42,16 @@ impl User {
             state: value.state,
         })
     }
+
+    pub fn clear_friends(&mut self) {
+        self.friends.clear();
+    }
     
-    pub fn add_friend(&mut self, friend: Friend) {
+    pub fn add_friend(&mut self, friend: User) {
         self.friends.push(friend);
     }
     
-    pub fn set_friends(&mut self, friends: Vec<Friend>) {
+    pub fn set_friends(&mut self, friends: Vec<User>) {
         self.friends = friends;
     }
 }
@@ -80,12 +76,8 @@ impl DbUser {
             state: UserState::ONLINE,
         }
     }
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct Friend {
-    uuid: UUID,
-    tag: String,
-    profile_pic: Option<UUID>,
-    state: UserState,
+    
+    pub fn friends(&self) -> &[String] {
+        &self.friends
+    }
 }

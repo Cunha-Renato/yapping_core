@@ -9,3 +9,10 @@ pub struct Chat {
     users: Vec<UUID>,
     messages: Vec<Message>,
 }
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct DbChat {
+    uuid: String,
+    users: Vec<String>,
+    messages: Vec<Message>,
+}
