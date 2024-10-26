@@ -61,6 +61,7 @@ pub struct DbUser {
     _id: String,
     tag: String,
     email: String,
+    password: String,
     profile_pic: Option<String>,
     friends: Vec<String>, // UUID
     state: UserState,
@@ -71,6 +72,7 @@ impl DbUser {
             _id: UUID::generate().to_string(),
             tag: info.tag,
             email: info.email,
+            password: info.password.to_string(),
             profile_pic: None,
             friends: Vec::default(),
             state: UserState::ONLINE,
