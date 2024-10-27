@@ -4,9 +4,23 @@ use l3gion_rust::UUID;
 use serde::{Deserialize, Serialize};
 use crate::{chat::Chat, message::Message, user::{User, UserCreationInfo}};
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ClientMessage {
+    pub uuid: UUID,
+    pub content: ClientMessageContent,
+}
+impl ClientMessage {
+    pub fn new(content: ClientMessageContent) -> Self {
+        Self { 
+            uuid: UUID::generate(), 
+            content, 
+        }
+    }
+}
+
 #[allow(non_camel_case_types)]
 #[derive(Serialize, Deserialize)]
-pub enum ClientMessage {
+pub enum ClientMessageContent {
     LOGIN(UserCreationInfo),
     SIGN_UP(UserCreationInfo),
     NEW_CHAT(Chat),
@@ -24,7 +38,7 @@ pub enum ClientMessage {
     // Sender, Receiver
     FRIEND_REQUEST(UUID, UUID),
 }
-impl Debug for ClientMessage {
+impl Debug for ClientMessageContent {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::LOGIN(arg0) => f.debug_tuple("LOGIN").field(arg0).finish(),
@@ -41,9 +55,23 @@ impl Debug for ClientMessage {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+pub struct ServerMessage {
+    pub uuid: UUID,
+    pub content: ServerMessageContent,
+}
+impl ServerMessage {
+    pub fn new(uuid: UUID, content: ServerMessageContent) -> Self {
+        Self { 
+            uuid,
+            content, 
+        }
+    }
+}
+
 #[allow(non_camel_case_types)]
 #[derive(Serialize, Deserialize, Debug)]
-pub enum ServerMessage {
+pub enum ServerMessageContent {
     SUCCESS(SuccessType),
     FAIL(String),
     // Chat uuid, Message
