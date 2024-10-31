@@ -30,6 +30,18 @@ pub struct User {
     state: UserState,
 }
 impl User {
+    pub fn tag(&self) -> &str {
+        &self.tag
+    }
+    
+    pub fn state(&self) -> UserState {
+        self.state
+    }
+    
+    pub fn friends(&self) -> &[User] {
+        &self.friends
+    }
+
     pub fn from(value: DbUser) -> Result<Self, StdError> {
         Ok(Self {
             uuid: UUID::from_u128(value._id.parse::<u128>()?),
