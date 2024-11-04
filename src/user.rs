@@ -52,20 +52,17 @@ impl User {
         &self.chats
     }
 
-    pub fn from(value: DbUser) -> Result<Self, StdError> {
+    pub fn from(db_user: DbUser) -> Result<Self, StdError> {
         Ok(Self {
-            uuid: UUID::from_u128(value._id.parse::<u128>()?),
-            tag: value.tag,
-            profile_pic: match value.profile_pic {
-                Some(uuid) => Some(UUID::from_u128(uuid.parse::<u128>()?)),
-                None => None,
-            },
+            uuid: UUID::from_u128(db_user._id.parse::<u128>()?),
+            tag: db_user.tag,
+            profile_pic: db_user.profile_pic.and_then(|uuid| Some(UUID::from_u128(uuid.parse::<u128>().ok()?))),
             friends: Vec::default(),
-            chats: value.chats
+            chats: db_user.chats
                 .iter()
                 .map(|id| UUID::from_u128(id.parse::<u128>().unwrap())) // Unwrap is bad, but Im lazy.
                 .collect(),
-            state: value.state,
+            state: db_user.state,
         })
     }
 

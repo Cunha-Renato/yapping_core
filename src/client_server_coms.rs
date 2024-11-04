@@ -33,6 +33,7 @@ pub enum ServerMessageContent {
     SESSION(Session),
     NOTIFICATION(Notification),
     MODIFICATION(Modification),
+    QUERY(Query),
 }
 
 #[allow(non_camel_case_types)]
@@ -41,6 +42,7 @@ pub enum Response {
     OK_SESSION(Session),
     OK_NOTIFICATION(Notification),
     OK_MODIFICATION(Modification),
+    OK_QUERY(Query),
     Err(String),
 }
 
@@ -76,4 +78,13 @@ pub enum Modification {
     /// User uuid, User password
     USER_PASSWORD(UUID, UUID),
     DELETE_USER(UUID),
+}
+#[allow(non_camel_case_types)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
+
+pub enum Query {
+    USERS_CONTAINS_TAG(String),
+    USERS_BY_TAG(Vec<String>),
+    USERS_BY_UUID(Vec<UUID>),
+    RESULT(Vec<User>),
 }
