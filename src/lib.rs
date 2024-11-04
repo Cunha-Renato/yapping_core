@@ -1,4 +1,4 @@
-pub mod server_message;
+pub mod client_server_coms;
 pub mod message;
 pub mod chat;
 pub mod user;

@@ -15,21 +15,27 @@ impl Debug for UserCreationInfo {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Default, Serialize, Deserialize, Debug, Clone, Copy)]
 pub enum UserState {
     ONLINE,
+    #[default]
     OFFLINE,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Default, Serialize, Deserialize, Debug, Clone)]
 pub struct User {
     uuid: UUID,
     tag: String,
     profile_pic: Option<UUID>,
     friends: Vec<User>,
+    chats: Vec<UUID>,
     state: UserState,
 }
 impl User {
+    pub fn uuid(&self) -> UUID {
+        self.uuid
+    }
+
     pub fn tag(&self) -> &str {
         &self.tag
     }
@@ -41,6 +47,10 @@ impl User {
     pub fn friends(&self) -> &[User] {
         &self.friends
     }
+    
+    pub fn chats(&self) -> &[UUID] {
+        &self.chats
+    }
 
     pub fn from(value: DbUser) -> Result<Self, StdError> {
         Ok(Self {
@@ -51,8 +61,17 @@ impl User {
                 None => None,
             },
             friends: Vec::default(),
+            chats: value.chats
+                .iter()
+                .map(|id| UUID::from_u128(id.parse::<u128>().unwrap())) // Unwrap is bad, but Im lazy.
+                .collect(),
             state: value.state,
         })
+    }
+
+    pub fn strip_info(&mut self) {
+        self.clear_friends();
+        self.chats.clear();
     }
 
     pub fn clear_friends(&mut self) {
@@ -76,6 +95,7 @@ pub struct DbUser {
     password: String,
     profile_pic: Option<String>,
     friends: Vec<String>, // UUID
+    chats: Vec<String>, // UUID
     state: UserState,
 }
 impl DbUser {
@@ -87,11 +107,16 @@ impl DbUser {
             password: info.password.to_string(),
             profile_pic: None,
             friends: Vec::default(),
+            chats: Vec::default(),
             state: UserState::ONLINE,
         }
     }
     
     pub fn friends(&self) -> &[String] {
         &self.friends
+    }
+    
+    pub fn chats(&self) -> &[String] {
+        &self.chats
     }
 }
