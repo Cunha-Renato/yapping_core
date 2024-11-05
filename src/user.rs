@@ -40,6 +40,10 @@ impl User {
         &self.tag
     }
     
+    pub fn profile_pic(&self) -> Option<UUID> {
+        self.profile_pic.clone()
+    }
+
     pub fn state(&self) -> UserState {
         self.state
     }

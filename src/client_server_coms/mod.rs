@@ -3,6 +3,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::{chat::Chat, message::Message, user::{User, UserCreationInfo}};
 
+pub mod coms_manager;
+pub use coms_manager::ComsManager;
+
 #[allow(non_camel_case_types)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct ServerMessage {
