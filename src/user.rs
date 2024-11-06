@@ -2,6 +2,8 @@ use std::fmt::Debug;
 use l3gion_rust::{StdError, UUID};
 use serde::{Deserialize, Serialize};
 
+use crate::client_server_coms::Notification;
+
 /// When printing the password shows, it's not a problem because this is a prototype.
 #[derive(Default, Clone, Serialize, Deserialize)]
 pub struct UserCreationInfo {
@@ -29,6 +31,7 @@ pub struct User {
     profile_pic: Option<UUID>,
     friends: Vec<User>,
     chats: Vec<UUID>,
+    notifications: Vec<Notification>,
     state: UserState,
 }
 impl User {
@@ -55,6 +58,10 @@ impl User {
     pub fn chats(&self) -> &[UUID] {
         &self.chats
     }
+    
+    pub fn notifications(&self) -> &[Notification] {
+        &self.notifications
+    }
 
     pub fn from(db_user: DbUser) -> Result<Self, StdError> {
         Ok(Self {
@@ -66,6 +73,7 @@ impl User {
                 .iter()
                 .map(|id| UUID::from_u128(id.parse::<u128>().unwrap())) // Unwrap is bad, but Im lazy.
                 .collect(),
+            notifications: db_user.notifications,
             state: db_user.state,
         })
     }
@@ -97,6 +105,7 @@ pub struct DbUser {
     profile_pic: Option<String>,
     friends: Vec<String>, // UUID
     chats: Vec<String>, // UUID
+    notifications: Vec<Notification>,
     state: UserState,
 }
 impl DbUser {
@@ -109,6 +118,7 @@ impl DbUser {
             profile_pic: None,
             friends: Vec::default(),
             chats: Vec::default(),
+            notifications: Vec::default(),
             state: UserState::ONLINE,
         }
     }
