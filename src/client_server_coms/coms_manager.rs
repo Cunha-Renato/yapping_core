@@ -12,7 +12,7 @@ struct TimeoutMessage {
 pub struct ComsManager {
     received_waiting: HashMap<UUID, ServerMessageContent>,
     sent_waiting: HashMap<UUID, TimeoutMessage>,
-    sent_responded: Vec<(ServerMessageContent, Response)>,
+    sent_responded: Vec<(ServerMessage, Response)>,
     to_retry: Vec<ServerMessage>,
 }
 impl ComsManager {
@@ -51,13 +51,19 @@ impl ComsManager {
         std::mem::take(&mut self.to_retry)
     }
     
-    pub fn sent_responded(&mut self) -> Vec<(ServerMessageContent, Response)> {
+    pub fn sent_responded(&mut self) -> Vec<(ServerMessage, Response)> {
         std::mem::take(&mut self.sent_responded)
+    }
+    
+    pub fn was_responded(&mut self, msg_uuid: UUID) -> bool {
+        self.sent_responded.iter()
+            .find(|sr| sr.0.uuid == msg_uuid)
+            .is_some()
     }
 
     pub fn received_waiting(&mut self) -> Vec<ServerMessage> {
         std::mem::take(&mut self.received_waiting)
-            .drain()
+            .into_iter()
             .map(|(uuid, content)| ServerMessage::new(uuid, content))
             .collect()
     }
@@ -65,7 +71,7 @@ impl ComsManager {
 impl ComsManager {
     fn handle_response(&mut self, msg_uuid: UUID, response: Response) {
         if let Some(sent) = self.sent_waiting.remove(&msg_uuid) {
-            self.sent_responded.push((sent.content, response));
+            self.sent_responded.push((ServerMessage::new(msg_uuid, sent.content), response));
         }
     }
     
