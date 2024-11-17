@@ -103,14 +103,19 @@ impl DbNotification {
             notification_type: DbNotificationType::from(&notification.notification_type),
         }
     }
+    
+    pub fn notification_type(&self) -> &DbNotificationType {
+        &self.notification_type
+    }
 }
 
 #[allow(non_camel_case_types)]
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 
 pub enum NotificationType {
     /// Chat uuid, Message
-    MESSAGE(UUID, Message),
+    NEW_MESSAGE(UUID, Message),
+    MESSAGE(UUID),
     MESSAGE_READ(UUID),
     NEW_CHAT(Chat),
     /// Sender Receiver
@@ -121,6 +126,7 @@ pub enum NotificationType {
 impl NotificationType {
     pub fn from(value: &DbNotificationType) -> Result<Self, StdError> {
         Ok(match value {
+            DbNotificationType::MESSAGE(chat_uuid) => Self::MESSAGE(UUID::from_u128(chat_uuid.parse()?)),
             DbNotificationType::FRIEND_REQUEST(sender, receiver) => Self::FRIEND_REQUEST(UUID::from_u128(sender.parse()?), UUID::from_u128(receiver.parse()?)),
             DbNotificationType::FRIEND_ACCEPTED(sender, receiver) => Self::FRIEND_ACCEPTED(UUID::from_u128(sender.parse()?), UUID::from_u128(receiver.parse()?)),
         })
@@ -131,8 +137,7 @@ impl NotificationType {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 
 pub enum DbNotificationType {
-    /// Chat uuid, Message
-    // MESSAGE(UUID, Message),
+    MESSAGE(String),
     // MESSAGE_READ(UUID),
     // NEW_CHAT(Chat),
     /// Sender Receiver
@@ -143,6 +148,7 @@ pub enum DbNotificationType {
 impl DbNotificationType {
     pub fn from(value: &NotificationType) -> Self {
         match value {
+            NotificationType::MESSAGE(chat_uuid) => Self::MESSAGE(chat_uuid.to_string()),
             NotificationType::FRIEND_REQUEST(sender, receiver) => Self::FRIEND_REQUEST(sender.to_string(), receiver.to_string()),
             NotificationType::FRIEND_ACCEPTED(sender, receiver) => Self::FRIEND_ACCEPTED(sender.to_string(), receiver.to_string()),
             _ => todo!()
@@ -181,6 +187,8 @@ pub enum Query {
     USERS_BY_UUID(Vec<UUID>),
     FRIEND_REQUESTS,
     USER_CHATS,
+    CHAT_MESSAGES(UUID),
+    RESULT_CHAT_MESSAGES(Vec<Message>),
     RESULT_USER(Vec<User>),
     RESULT_FRIEND_REQUESTS(Vec<Notification>),
     RESULT_CHATS(Vec<Chat>),// TODO: I don't know how Im going to do this.

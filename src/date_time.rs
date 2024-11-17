@@ -2,7 +2,7 @@ use std::fmt::Display;
 use chrono::{Datelike, Timelike};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq)]
 pub struct DateTime {
     date: Date,
     time: Time,
@@ -40,7 +40,7 @@ const SECOND_MASK: u32 =    0b00000000000000000000000000111111;
 const MINUTE_MASK: u32 =    0b00000000000000000000111111000000;
 const HOUR_MASK: u32 =      0b00000000000000011111000000000000;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq)]
 pub struct Date {
     date: u32,    
 }
@@ -76,7 +76,7 @@ impl Display for Date {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq)]
 pub struct Time {
     time: u32
 }
