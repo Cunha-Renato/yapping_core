@@ -122,6 +122,7 @@ pub enum NotificationType {
     FRIEND_REQUEST(UUID, UUID),
     /// Sender Receiver
     FRIEND_ACCEPTED(UUID, UUID),
+    RESEND_USER(UUID),
 }
 impl NotificationType {
     pub fn from(value: &DbNotificationType) -> Result<Self, StdError> {
@@ -177,6 +178,7 @@ pub enum Modification {
     /// User uuid, User password
     USER_PASSWORD(UUID, UUID),
     DELETE_USER(UUID),
+    REMOVE_FRIEND(UUID),
 }
 #[allow(non_camel_case_types)]
 #[derive(Serialize, Deserialize, Debug, Clone)]
